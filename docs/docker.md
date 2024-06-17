@@ -73,6 +73,7 @@ to build the image use the command below:
 ```bash
 sudo docker build -t <image_name>:tag <path_to_the_dockerfile.txt>
 ```
+the `-t` is used to tag the image with a name and/or a tag i.e. version nr.
 
 ## .dockerignore
 to prevent copying  specified files into the container 
@@ -81,6 +82,47 @@ Example:
 node_modules
 *.log
 *.md
+```
+
+## Listing all images: 
+```bash
+docker images
+```
+
+## remove an image
+```bash
+docker rmi <imageName>
+```
+
+## running 
+When the image is build, we can wun our image in a conotainer using `docker run command`. 
+
+**To assign a name to the conatiner:**
+```bash
+docekr run --name <nameOdContainer> <imageName>
+```
+
+**Other switches used with `docker run`:**
+- `-d`: used to run the container as background process 
+- `--ernv-file <path-to-env-file>`: To specify the environment variables needed for to running the conatiner. 
+
+- `-p` for forwarding containers port, local:container 
+
+- `--rm`: to say ti the docker that rm the container after running it. 
+
+
+## executing commands inside the running container:
+`docker exec` is a command in Docker that allows you to run a command inside a running Docker container. 
+
+Example1: 
+```bash
+docker exec -it <containerName> bash
+
+```
+
+Example running the psql in a specific databse.
+```bash
+docker exec -it <containerNameOrID> psql -U <user> -d <databseName>
 ```
 
 ## Listing all containers 
@@ -104,7 +146,10 @@ docker stop <container_id>
 ```bash
 docker rm <container_id>
 ```
-
+To remove all containers:
+```bash
+docker container prune
+```
 
 
 
@@ -139,7 +184,6 @@ To aviod in Dockerfile:
 
 
 
-## running 
 
 
 ## Network types in Docker: 
@@ -200,5 +244,10 @@ docker run --network my_custom_network myapp
 
 
 
+## Containers' logs: 
+
+```bash
+docker logs <nameOrContainerID>
+```
 
 
