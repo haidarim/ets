@@ -1,9 +1,7 @@
 package com.ets.ets_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 
 
 /**
@@ -12,13 +10,17 @@ import jakarta.persistence.Id;
 
 // the name of this class will be a table in postgres,
 // since 'user' is reserved in postgres we use the annotation below to give the table other name:
+// @Table(name = "app_user") // Specify a different name here
+// ot changing from user to client
+
+@Table(name = "clients") // Specify a different name here
 @Entity
+@Data
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String email;
-
-
+    private String password;
 }
