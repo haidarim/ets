@@ -72,17 +72,17 @@ const SignUp = ()=>{
             // go a head ... 
             try{
                 const response  = await fetch(
-                    'API_Call',
+                    'http://localhost:8080/api0/sign-up',
                     {
                         method: 'POST',
                         headers:{
                             'Content-type': 'application/json'
                         },
-                        body:{
+                        body: JSON.stringify({
                             username,
                             email,
                             password
-                        }
+                        })
                     }
                 );
             }catch(reqErr){
