@@ -1,1 +1,6 @@
-document about the regEx in js!
+
+* fix front end when sending sing-up request
+* fix backend to use certificate and hash the password + adding salt and pepper
+* document about the regEx in js!
+
+
