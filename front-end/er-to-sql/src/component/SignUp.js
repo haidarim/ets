@@ -6,7 +6,7 @@ import { useState } from "react";
  * - has at least 2 characters
  * 
  */
-const nameSanityCheck = (name)=>{
+export const nameSanityCheck = (name)=>{
     const nameRegex = /^[A-Za-z][A-Za-z0-9]*$/;
     return name.length >= 2 && nameRegex.test(name);
 }
@@ -19,7 +19,7 @@ const nameSanityCheck = (name)=>{
       • One is capital letter,
       • And one is specicial character i.e. none alphabete!
  */
-const passwordSanityCheck = (password)=>{
+export const passwordSanityCheck = (password)=>{
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
     return passwordRegex.test(password);
 }
@@ -27,14 +27,14 @@ const passwordSanityCheck = (password)=>{
 /**
  * Check if the entered and re-entered passsword addresses are the same 
  */
-const checkReEnteredPasswordValidation = (password, reEnteredPassword)=>{
+export const checkReEnteredPasswordValidation = (password, reEnteredPassword)=>{
     return password === reEnteredPassword;
 }
 
 /**
  * Check if the entered and re-entered email addresses are the same 
  */
-const checkReEnteredEmailValidation = (email, reEnteredEmail)=>{
+export const checkReEnteredEmailValidation = (email, reEnteredEmail)=>{
     return email === reEnteredEmail;
 }
 
@@ -67,6 +67,7 @@ const SignUp = ()=>{
 
         if (errors.length>0) {
             setErrorMessages(errors);
+            
             
         } else {
             // go a head ... 
