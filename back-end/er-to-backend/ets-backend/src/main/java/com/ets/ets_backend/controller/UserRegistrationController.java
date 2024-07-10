@@ -1,6 +1,7 @@
 package com.ets.ets_backend.controller;
 
 
+import com.ets.ets_backend.model.Dashboard;
 import com.ets.ets_backend.model.User;
 import com.ets.ets_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,10 @@ public class UserRegistrationController {
         service.createUser(user);
         // set the status of the response and build it without body.
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{ticket}/}")
+    public ResponseEntity<Dashboard> getUser_sDashboard(){
+        return ResponseEntity.status(HttpStatus.OK).body(new Dashboard());
     }
 }
