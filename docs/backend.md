@@ -246,6 +246,179 @@ public void addCorsMappings(CorsRegistry registry) {
 
 ```
 
+### Asynchronous processes in Spring Boot: 
+Spring Boot supports asynchronous processing, which allows to define asynchronous services and call them asynchronously, similar to  async and await in Node.js. The asynchronous process can be used in Controller, Service and Repository (Router, Service, Data access layers). Using asynchronous process makes the application more responsive.
+
+In the context of asynchronous methods and calling them from another thread, this can be done in different ways using various techniques. A method can be defined as `asynchronous` and then called by other threads. Caller threads can invoke these methods and wait for their completion before continuing with other tasks in a code block. This can result in either blocking the entire thread or just pausing the execution of the specific code block where the async method is called.
+
+In Node.js, using `await` pauses only the execution of the function in which `await` is called until the asynchronous operation completes. The rest of the code block within that function will resume execution afterward. However, this does not block the entire thread running the application. Node.js operates on a single-threaded event loop, allowing the application to continue processing other events, such as handling new incoming requests, while the async function is paused.
+
+In Spring Boot, calling `CompletableFuture.get()` will block the calling thread until the asynchronous operation completes. This means the entire thread will be paused while waiting for the result. To avoid blocking,  use non-blocking methods like `thenApply`, `thenAccept`, and similar methods, which allow you to handle the result of the future without blocking the calling thread.
+
+Example in Node: In the example below, the second await call will not be executed until the first call `await fetch('/url://')` is returned, as well as rest of the code sequence will be executed after second call returned. 
+```javascirpt
+async function getDataAsync() {
+  try {
+    const res = await fetch('/url://');
+    const resBody = await response.body();
+    console.log(resBody);
+  } catch (err) {
+    console.log('Error:' + err.message);
+  }
+}
+```
+
+Example in Spring boot: The code after `.thenAccept(...)` will be executed after the task is performed by the service, and the code sequence in the method is paused, but not entire the thread!
+```Java
+@GetMapping("/async")
+public ResponseEntity<String> asyncEndpoint() {
+    CompletableFuture<String> futureResult = myService.asyncOperation();
+
+    futureResult.thenAccept(result -> {
+        System.out.println("Async operation result: " + result);
+        // Further processing if needed
+    });
+
+    return ResponseEntity.ok("Request received, processing asynchronously");
+}
+```
+
+**Reader/Writer problem:**
+
+
+To enable asynchronous process in the Spring boot application we  need:
+- Configuration for asynchronous process.
+- Marking methods for asynchronous. 
+- Using methods with `thenApply`
+
+
+#### Configuration: 
+The configuration can be either in its own class, or in same config class as e.g. CORS, and the config class should also include the `@EnableAsync` annotation. But for better code (cleaner code) and to practice the single responsibility principle (SRP) is it preferred to be in it own configuration class. 
+
+In the config calss (@Configuration) for the asynchronous process, we can define thread-pooling mechanism using `@Bean(name = "nameOfTheFactoryMethod")` annotation, and then implementing thread-pool mechanism in the factory method (the method annotated with @Bean is a factory method which returns an object that later being managed by Spring Inversion of Control, IoC, as a bean the configuration).
+
+Example: using ThreadPoolTaskExecutor as the bean configuration for asynchronous process configuration in Spring boot application. 
+```Java
+
+@Configuration
+@EnableAsync
+public class AsyncConfig {
+
+    @Bean(name = "taskExecutor")
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("AsyncThread-");
+        executor.initialize();
+        return executor;
+    }
+}
+
+```
+
+Different types of thread-pooling mechanisms are available for asynchronous process in Spring boot/Java (also known as different kind of ExecutorService). Some of them are as following: 
+
+1. **ThreadPoolTaskExecutor:**: is a robust implementation of ExecutorService provided by Spring Framework. It allows to configure a thread pool with various parameters such as core size, maximum size, queue capacity, and thread names. 
+- `setCorePoolSize(int corePoolSize)`: The core pool size determines the minimum number of threads that are kept alive in the pool, even if they are idle. In this case, the pool will always have at least 2 threads running.
+
+- `setMaxPoolSize(int max)`: The maximum pool size is the limit on the number of threads that can be created in the pool. When the pool reaches this size, it cannot create additional threads and will start queuing tasks if the queue is not full.
+
+- `setQueueCapacity(int cap)`: he queue capacity determines how many tasks can be queued before new tasks are rejected or handled by a rejection policy. 
+- `setThreadNamePrefix("AsyncThread-")`:Thread name prefixes help in identifying and debugging threads. 
+
+Note: if the number of active threads is below the core pool size and the queue is not full, the task will definitely be executed immediately by creating a new thread. The queue is used primarily when the number of active threads is equal to or greater than the core pool size.
+
+This mechanism is recommended for general-purpose asynchronous task execution in Spring applications where tasks can be submitted for parallel execution.
+
+2. **ScheduledThreadPoolExecutor:** Commonly used for scheduling tasks to run periodically or after a delay.
+This mechanism is recommended for scheduled tasks where precise timing and periodic execution are required, often used in backend services or batch processing jobs.
+
+Example: 
+```Java
+@Configuration
+@EnableScheduling
+public class ScheduledConfig {
+
+    @Bean(name = "taskScheduler")
+    public ThreadPoolTaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(10);
+        scheduler.setThreadNamePrefix("ScheduledThreadPoolExecutor-");
+        scheduler.initialize();
+        return scheduler;
+    }
+}
+```
+
+
+3. **ForkJoinPool:** Useful for parallel processing and divide-and-conquer algorithms.
+
+Example: 
+```java
+@Configuration
+@EnableAsync
+public class AsyncConfig implements AsyncConfigurer {
+    @Bean(name = "forkJoinPool")
+    public Executor forkJoinPool() {
+        return new ForkJoinPool();
+    }
+}
+```
+
+#### Marking methods for asynchronous:
+Asynchronous methods in Spring boot being annotate with `@Async("NameOfTheThreadPoolBean")`. These methods can return `CompletableFuture<T>` which is a type of `Future` similar to `Promise` in node. A Future in java is an interface representing the result of an asynchronous computation. 
+
+Example: 
+```java
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository repository;
+
+    @Async("taskExecutor")
+    @Transactional
+    public CompletableFuture<Boolean> updateUser(User user) {
+        return repository.findByUsername(user.getUsername())
+                .thenApply(existingOpt -> {
+                    if (existingOpt.isPresent()) {
+                        User existing = existingOpt.get();
+                        existing.setUsername(user.getUsername());
+                        existing.setEmail(user.getEmail());
+                        existing.setPassword(user.getPassword());
+                        repository.save(existing);
+                        return true;
+                    }
+                    return false;
+                });
+    }
+
+}
+
+```
+
+... 
+
+#### Using async methods in Controller: 
+Example: 
+```java
+@PutMapping
+public CompletableFuture<ResponseEntity<Void>> updateUser(@RequestBody User user) {
+    return service.updateUser(user)
+            .thenApply(updated -> {
+                if (updated) {
+                    return ResponseEntity.status(HttpStatus.OK).build();
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                }
+            });
+    }
+
+```
+
 ### application properties file: 
 The application.properties file is a configuration file used in Spring Boot applications to define properties and settings for the application. 
 
@@ -307,9 +480,37 @@ spring.security.user.roles=USER
 
 there are more configuration that can be founded in the spring docs. 
 
+### Web Server Thread Pool Management: **TODO**
+
 ### Lombok: 
 Lombok is a Java library that helps reduce boilerplate code in Java classes. It provides annotations to automatically generate methods such as getters, setters, constructors, toString, equals, and hashCode methods at compile time. This reduces the amount of repetitive code that developers need to write, thereby improving code readability and maintainability.
 
 To use Lombok in a class import it `lombok.Data`, and then annotate the class with `@Data`
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+...
+It is important to think about reader/writer pwoblem using asynchronous process! while there will not be deadlock since using asynch structure, then in node the thread going off and in java an thread pool takes care of scheduling, but when it comed to race conddition or data inconstence, multi reader can read at the same time bit, multi writers cannot, and even writer and reader cannot attempt to the resource at same time
+
+i use syncronization for those methods that reders and writers both share with each other to mark the critical section, and those methods should not be asycnh rather synch. in this way i can solve even race condition, and using synch methods deadlock safity is also already considered!
+
+Note that using node the race condition and deadlock are not  problem since the node is single-threaded threads will be accessed to the shared resource in turn, sleep wkae and release. In Spring boot we should take care of  reace condition, and deadlock is not a problem because we remove the hold and wait factor, by having thread-pool that gives each call to the asynch metgod a worker thread from the pool, a thread will not have a resource and wiat for another if the asynch method does't implmmnet hold and wait. 
+....
