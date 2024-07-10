@@ -2,6 +2,7 @@ package com.ets.ets_backend.service;
 
 import com.ets.ets_backend.model.User;
 import com.ets.ets_backend.repository.UserRepository;
+import com.ets.ets_backend.security.HashUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,16 @@ public class UserService {
     // TODO: Encrypt and hash the pass + salt + pepper before saving
     @Transactional
     public void createUser(User user){
-        repository.save(user);
+        if(repository.findByUsername(user.getUsername()).orElse(null) != null){
+            return;
+        }
+        User u = new User();
+        u.setSalt(HashUtil.generateSalt(32));
+        u.setPassword(HashUtil.hashPassword(user.getPassword(), u.getSalt()));
+        // u.setId(user.getId());
+        u.setUsername(user.getUsername());
+        u.setEmail(user.getEmail());
+        repository.save(u);
     }
 
     @Transactional
