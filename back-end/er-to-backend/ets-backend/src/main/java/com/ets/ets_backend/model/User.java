@@ -3,6 +3,8 @@ package com.ets.ets_backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 
 /**
  * User Entity class, representing users' structured data stored in database
@@ -27,4 +29,10 @@ public class User {
     private String email;
     private String password;
     private boolean verified;
+    byte[] salt;
+
+    private String ticket;
+    private int ttaInSec;
+    private boolean exited;
+    private List<String> devices;
 }
