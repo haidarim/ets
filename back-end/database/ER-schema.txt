@@ -1,0 +1,25 @@
+users(_id_, _uname_, _email_, exited, salt, ticket, password)
+
+projects(_creator_, _project_id_, created_time, modified_time)
+    _creator_ -> Users._id_
+
+
+dashboards(_owner_)
+    _owner_ -> Users._id_
+
+
+project_in_dashboards(_owner_, _project_id_)
+    _owner_ -> dashboards._owner_
+    _project_id_ -> Projects._project_id_
+
+
+shapes(type, points)
+
+links(from, to)
+
+
+shapes_in_project(_creator_,_shape_name_, _ptoject_id_, _linker_, _linked_, _through_)
+    _creator_ -> projects._creator_
+    _project_id_ -> projects._project_id_
+
+
