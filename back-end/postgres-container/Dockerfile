@@ -1,10 +1,15 @@
 # Stage 1: Build stage/layer 1
 FROM postgres:14 AS builder
 
-# Set environment variables directly in the Dockerfile
-ENV POSTGRES_DB=testdb
-ENV POSTGRES_USER=dev_user
-ENV POSTGRES_PASSWORD=010101
+# Define build arguments
+ARG POSTGRES_DB
+ARG POSTGRES_USER
+ARG POSTGRES_PASSWORD
+
+# Set environment variables using build arguments
+ENV POSTGRES_DB=${POSTGRES_DB}
+ENV POSTGRES_USER=${POSTGRES_USER}
+ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
 # Copy the template to the container
 COPY init.sql.template /init.sql.template
@@ -21,3 +26,4 @@ EXPOSE 5432
 
 # Copy init.sql from builder stage/layer
 COPY --from=builder /init.sql.template /docker-entrypoint-initdb.d/init.sql
+
