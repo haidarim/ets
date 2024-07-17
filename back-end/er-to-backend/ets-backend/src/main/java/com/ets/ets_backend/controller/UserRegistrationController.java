@@ -23,8 +23,4 @@ public class UserRegistrationController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{ticket}/}")
-    public ResponseEntity<Dashboard> getUser_sDashboard(){
-        return ResponseEntity.status(HttpStatus.OK).body(new Dashboard());
-    }
 }
