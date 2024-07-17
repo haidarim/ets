@@ -21,9 +21,5 @@ public class Dashboard {
 
     private String password;
 
-    public Dashboard(){
-
-    }
-
     
 }
