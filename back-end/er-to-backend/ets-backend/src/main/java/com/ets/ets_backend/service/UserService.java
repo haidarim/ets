@@ -19,7 +19,6 @@ public class UserService {
 //    }
 
 
-    // TODO: Encrypt and hash the pass + salt + pepper before saving
     @Transactional
     public void createUser(User user){
         if(repository.findByUsername(user.getUsername()).orElse(null) != null){
@@ -54,10 +53,10 @@ public class UserService {
         repository.findByUsername(user.getUsername()).ifPresent(toDelete -> repository.deleteById(toDelete.getId()));
     }
 
-    @Transactional(readOnly = true)
-    public boolean isVerified(User user){
-        User toCheck = repository.findByUsername(user.getUsername()).orElse(null);
-        return toCheck != null && toCheck.isVerified();
-    }
+//    @Transactional(readOnly = true)
+//    public boolean isVerified(User user){
+//        User toCheck = repository.findByUsername(user.getUsername()).orElse(null);
+//        return toCheck != null && toCheck.isVerified();
+//    }
 
 }
