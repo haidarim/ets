@@ -1,6 +1,6 @@
 package com.ets.ets_backend.security;
 
-import com.ets.ets_backend.model.User;
+import com.ets.ets_backend.model.Client;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -67,7 +67,7 @@ public class JwtUtil {
      * @return String, a newly created JwtToken
      * @throws  IllegalAccessException if the username is invalid i.e. user == null
      * */
-    public String generateToken(User user) throws IllegalAccessException {
+    public String generateToken(Client user) throws IllegalAccessException {
         if (user == null)
             throw new IllegalAccessException("invalid username");
         Map<String, Object> claims = new HashMap<>();

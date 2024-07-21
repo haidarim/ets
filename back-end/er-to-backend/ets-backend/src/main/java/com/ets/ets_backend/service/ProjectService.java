@@ -1,6 +1,6 @@
 package com.ets.ets_backend.service;
 
-import com.ets.ets_backend.repository.DashboardRepository;
+import com.ets.ets_backend.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @author  Mehdi Haidari
  * */
 @Service
-public class DashboardService {
+public class ProjectService {
 
     @Autowired
-    DashboardRepository dashboardRepository;
+    ProjectRepository dashboardRepository;
 
     @Transactional
     public

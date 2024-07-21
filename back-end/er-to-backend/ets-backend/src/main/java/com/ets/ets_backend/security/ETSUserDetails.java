@@ -1,7 +1,7 @@
 package com.ets.ets_backend.security;
 
 
-import com.ets.ets_backend.model.User;
+import com.ets.ets_backend.model.Client;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 @Getter
-public record ETSUserDetails(User user) implements UserDetails {
+public record ETSUserDetails(Client user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -44,5 +44,9 @@ public record ETSUserDetails(User user) implements UserDetails {
 
     public boolean isExited(){
         return this.user.isExited();
+    }
+
+    public Client getUser() {
+        return this.user;
     }
 }
