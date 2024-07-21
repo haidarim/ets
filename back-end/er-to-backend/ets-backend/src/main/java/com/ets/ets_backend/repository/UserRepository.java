@@ -1,15 +1,12 @@
 package com.ets.ets_backend.repository;
 
-import com.ets.ets_backend.model.User;
+import com.ets.ets_backend.model.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+public interface UserRepository extends JpaRepository<Client, Long> {
+    Optional<Client> findByUsername(String username);
     // sophisticated queries if needed! else enough :)
 
     // @Query("update clients set clients.password = :pass where clients.Id = :Id and clients.email = :email and clients.username = :username")
