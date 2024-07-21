@@ -54,3 +54,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+
+grep pr_key.pem
