@@ -3,7 +3,11 @@ package com.ets.ets_backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -18,21 +22,34 @@ import java.util.List;
 @Table(name = "clients") // Specify a different name here
 @Entity
 
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @NotBlank
+    @Size(min=3, max = 20)
+    @Column(name = "uname", unique = true, nullable = false)
     private String username;
 
+    @NotBlank
+    @Email
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
+
+    @NotBlank
+    @Size(min=8)
+    @Column(name="password", nullable = false)
     private String password;
-    private boolean verified;
+
+    @NotBlank
+    @Column(nullable = false)
     byte[] salt;
 
+    @NotBlank
+    @Column(name="ticket", nullable = false)
     private String ticket;
-    private int ttaInSec;
-    private boolean exited;
-    private List<String> devices;
+
+    @Column(nullable = false)
+    private Boolean exited;
 }
