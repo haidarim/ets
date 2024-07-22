@@ -23,7 +23,7 @@ import java.util.List;
  * @author Mehdi Haidari
  */
 
-@Getter
+
 public record ETSUserDetails(Client user) implements UserDetails {
 
     @Override
@@ -43,7 +43,7 @@ public record ETSUserDetails(Client user) implements UserDetails {
 
 
     public boolean isExited(){
-        return this.user.isExited();
+        return this.user.getExited();
     }
 
     public Client getUser() {

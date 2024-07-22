@@ -4,7 +4,6 @@ import com.ets.ets_backend.model.Client;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -13,6 +12,7 @@ import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,38 +28,64 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret.privateKeyPath}")
-    private String privateKeyPath;
 
-    @Value("${jwt.secret.publicKeyPath}")
-    private String publicKeyPath;
 
     private static final long JWT_TOKEN_VALIDITY = 3600*1000; // 1h
 
-    private KeyPair keyPair;
 
-    public JwtUtil(){
+    private final KeyPair keyPair;
+
+    public JwtUtil() {
         try {
+            String privateKeyPath = System.getProperty("JWT_PR_KEY");// "./../../postgres-container/pr_key.pem";
+            String publicKeyPath = System.getProperty("JWT_PU_KEY");// "./../../postgres-container/public.key";
+            System.out.println("Loading private key from: " + privateKeyPath);
+            System.out.println("Loading public key from: " + publicKeyPath);
+
+
             // Load private and public key bytes from files
-            byte[] privateKeyBytes = Files.readAllBytes(Paths.get(privateKeyPath));
-            byte[] publicKeyBytes = Files.readAllBytes(Paths.get(publicKeyPath));
+            byte[] privateKeyBytes = Files.readAllBytes(Paths.get(privateKeyPath).toAbsolutePath());
+            byte[] publicKeyBytes = Files.readAllBytes(Paths.get(publicKeyPath).toAbsolutePath());
 
             // Create KeyFactory for RSA
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
-            // Convert bytes to private key using PKCS8EncodedKeySpec
-            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-            PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+            // Convert private key bytes to PrivateKey
+            PrivateKey privateKey = loadPrivateKey(privateKeyBytes, keyFactory);
 
-            // Convert bytes to public key using X509EncodedKeySpec
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            // Convert public key bytes to PublicKey
+            PublicKey publicKey = loadPublicKey(publicKeyBytes, keyFactory);
 
             // Create a KeyPair from the private and public keys
             this.keyPair = new KeyPair(publicKey, privateKey);
         } catch (IOException | GeneralSecurityException e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to load keys", e);
         }
+    }
+
+    private PrivateKey loadPrivateKey(byte[] keyBytes, KeyFactory keyFactory) throws GeneralSecurityException {
+        String keyString = new String(keyBytes)
+                .replaceAll("-----BEGIN PRIVATE KEY-----", "")
+                .replaceAll("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+
+        byte[] decodedKey = Base64.getDecoder().decode(keyString);
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    private PublicKey loadPublicKey(byte[] keyBytes, KeyFactory keyFactory) throws GeneralSecurityException {
+        String keyString = new String(keyBytes)
+                .replaceAll("-----BEGIN PUBLIC KEY-----", "")
+                .replaceAll("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s", "");
+
+        byte[] decodedKey = Base64.getDecoder().decode(keyString);
+
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
+        return keyFactory.generatePublic(keySpec);
     }
 
     /**
@@ -71,7 +97,7 @@ public class JwtUtil {
         if (user == null)
             throw new IllegalAccessException("invalid username");
         Map<String, Object> claims = new HashMap<>();
-        claims.put("exited", user.isExited());
+        claims.put("exited", user.getExited());
         return createToken(claims, user.getUsername());
     }
 
