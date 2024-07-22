@@ -55,4 +55,6 @@ yarn-error.log*
 
 .env
 
-grep pr_key.pem
+pr_key.pem
+public.key
+
