@@ -10,9 +10,17 @@ import java.io.Serializable;
 @Entity
 @Table(name="links")
 public class Link implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private LinksId id;
 
-    
+    @ManyToOne
+    @MapsId("from")
+    @JoinColumn(name = "lfrom") // refers to LinksId.lfrom
+    private Shape from;
+
+
+    @ManyToOne
+    @MapsId("to")
+    @JoinColumn(name = "lto") // refers to LinksId.lto
+    private Shape to;
 }

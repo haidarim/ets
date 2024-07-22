@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @Entity
@@ -20,6 +21,7 @@ public class Shape implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "shId")
     private Long id;
 
     @Column(name = "shname", nullable = false)
@@ -40,16 +42,18 @@ public class Shape implements Serializable {
     @JoinColumn(name = "projectName", nullable = false)
     private Project projectName;
 
+    //@OneToMany(mappedBy = "lfrom") // bidirectional, many-to-many, from many shapes
+    //private Set<Shape> outgoingLinks; // outgoing from this Shape
 
-
+    //@OneToMany(mappedBy = "lto") // to many shapes
+    //private Set<Shape> incomingLinks; // incoming to this Shape
 
     //............................... Helper to handle JsonData.................................
     @Transient // specifies that the field below should not be stored in the db
     private JsonNode jsonPoints;
 
     @PostLoad // before loading from db
-    @PrePersist // marks the method below to be called before the entity is persisted i.e. before a new record is inserted into the table
-    @PostUpdate // before updating
+    // NOTE: When using @PreLoad, we can not have @PrePersist and/or PreUpdate
     public void parseJson() {
         try{
             ObjectMapper mapper = new ObjectMapper();
