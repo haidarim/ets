@@ -1,4 +1,11 @@
+/**
+ * 
+ */
+
 import { useState } from "react";
+import Dashboard from "./Dashboard";
+
+
 /**
  * To ensure that the name is valid, a valid name:
  * - can contain a number character but should not start with a number
@@ -86,6 +93,10 @@ const SignUp = ()=>{
                         })
                     }
                 );
+
+		if(response.ok){
+			console.log(response.json);
+		}
             }catch(reqErr){
 
             }
@@ -102,8 +113,7 @@ const SignUp = ()=>{
                     ))
                 ):
                 (<>
-                    Enter a valid email and 
-                    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; A password with at least 8 charachters, where:
+                    Enter a valid email and a password with at least 8 charachters, where:
                     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; At least one is a number, 
                     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; One is low letter, 
                     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; One is capital letter,
