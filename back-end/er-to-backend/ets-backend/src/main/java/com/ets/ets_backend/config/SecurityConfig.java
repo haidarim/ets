@@ -2,6 +2,7 @@ package com.ets.ets_backend.config;
 
 
 import com.ets.ets_backend.security.ETSUserDetailsService;
+import com.ets.ets_backend.security.HashUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +44,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable) // Disable the CSRF protection
                 .authorizeHttpRequests(authorizeRequests->
                     authorizeRequests // Starts the configuration for URL-based authorization
-                            .requestMatchers("/api0/sign-in/**").permitAll() // allow unauthenticated access to this path
+                            .requestMatchers("/api0/sign-up", "/api0/sign-in").permitAll() // allow unauthenticated access to this path
                             .anyRequest().authenticated() // require authentication for any other request
                 ).sessionManagement(
                         // Setting the Session management to stateless i.e. NO session will be created or
@@ -60,13 +61,12 @@ public class SecurityConfig {
      * Configures and returns an AuthenticationManager
      * @param http: HttpSecurity
      * @param  passwordEncoder: PasswordEncode
-     * @param userDetailsService: UserDetailsService
      * @throws Exception if configuration goes wrong
      * */
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
         AuthenticationManagerBuilder ab =  http.getSharedObject(AuthenticationManagerBuilder.class);
-        ab.userDetailsService(userDetailsService)
+        ab.userDetailsService(etsUserDetailService)
                 .passwordEncoder(passwordEncoder);
         return ab.build();
     }
@@ -77,6 +77,7 @@ public class SecurityConfig {
      */
     @Bean
     public PasswordEncoder passwordEncoder(){
+        //return new HashUtil();
         return new BCryptPasswordEncoder();
     }
 
