@@ -9,14 +9,14 @@ body{
   font-size: large;
   background-color: rgba(0, 0, 0, 0.4);
   justify-content: center;
-  border-radius: 2em 2em 2em 2em;
-  width:  24rem;
+  border-radius: 3rem;
+  width:  20rem;
   height: 8rem;
   padding: 2rem .2rem 2rem .2rem;  
 }
 
 .inputFields{
-  width: 19rem;
+  width: 15rem;
   height: 1.7rem;
   margin: .4rem 0rem .4rem 0rem;
 }
@@ -61,8 +61,55 @@ body{
 }
 
 .app-p{
-  width: 24rem;
+  width: 20rem;
   font-size: 1rem;
   padding: 1rem .2rem 1rem .2rem;  
   color: rgb(207, 234, 234);
+}
+
+
+
+.dashboard_container{
+  margin: auto;
+  color: white;
+  display: grid;
+  justify-content: center;
+}
+
+.dashboard_main{
+  display: flex;
+  column-gap: 3rem;
+  justify-content: center;
+}
+
+.dashboard_panel_left{
+  background-color: #058071;
+  width: 25vw;
+  height: 32rem;
+  border-radius: 2rem;
+  display: flex;
+  flex-flow: column;
+  row-gap: 10rem;
+}
+
+.dashboard_panel_left div{
+  display: flex;
+  align-items: center;
+  column-gap: .5rem;
+}
+
+.dashboard_panel_right{
+  background-color: #058071;
+  width: 55vw;
+  height: 32rem;
+  border-radius: 2rem;
+}
+
+.dashboard_panel_left>menu{
+  display: grid;
+}
+
+
+@media  (min-width:600px) {
+  
 }
