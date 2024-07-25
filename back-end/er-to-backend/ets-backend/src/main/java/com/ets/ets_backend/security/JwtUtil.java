@@ -39,8 +39,8 @@ public class JwtUtil {
         try {
             String privateKeyPath = System.getProperty("JWT_PR_KEY");// "./../../postgres-container/pr_key.pem";
             String publicKeyPath = System.getProperty("JWT_PU_KEY");// "./../../postgres-container/public.key";
-            System.out.println("Loading private key from: " + privateKeyPath);
-            System.out.println("Loading public key from: " + publicKeyPath);
+//            System.out.println("Loading private key from: " + privateKeyPath);
+//            System.out.println("Loading public key from: " + publicKeyPath);
 
 
             // Load private and public key bytes from files
@@ -89,16 +89,16 @@ public class JwtUtil {
     }
 
     /**
-     * @param user, User
+     * @param client, User
      * @return String, a newly created JwtToken
-     * @throws  IllegalAccessException if the username is invalid i.e. user == null
+     * @throws  IllegalAccessException if the username is invalid i.e. client == null
      * */
-    public String generateToken(Client user) throws IllegalAccessException {
-        if (user == null)
+    public String generateToken(Client client) throws IllegalAccessException {
+        if (client == null)
             throw new IllegalAccessException("invalid username");
         Map<String, Object> claims = new HashMap<>();
-        claims.put("exited", user.getExited());
-        return createToken(claims, user.getUsername());
+        claims.put("exited", client.getExited());
+        return createToken(claims, client.getUsername());
     }
 
     // set up the token properties e.g. ExpirationTime, created tie, ...

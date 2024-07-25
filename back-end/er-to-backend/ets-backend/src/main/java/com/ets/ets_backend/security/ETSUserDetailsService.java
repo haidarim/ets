@@ -28,7 +28,8 @@ import org.springframework.stereotype.Service;
 public class ETSUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-
+//    @Autowired
+//    private HashUtil hashUtil;
 
     /**
      * @param  username, String
