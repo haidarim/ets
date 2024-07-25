@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "api0/sign-up")
-public class UserRegistrationController {
+public class ClientRegistrationController {
 
     @Autowired
     private ClientService service;
