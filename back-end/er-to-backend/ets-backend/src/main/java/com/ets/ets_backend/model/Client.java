@@ -41,13 +41,13 @@ public class Client implements Serializable {
     @Column(name="password", nullable = false)
     private String password;
 
-    @NotBlank
-    @Column(nullable = false)
-    byte[] salt;
+//    @NotBlank
+//    @Column(nullable = false)
+//    byte[] salt;
 
-    @NotBlank
-    @Column(name="ticket", nullable = false)
-    private String ticket;
+//    @NotBlank
+//    @Column(name="ticket", nullable = false)
+//    private String ticket;
 
     @Column(nullable = false)
     private Boolean exited;
