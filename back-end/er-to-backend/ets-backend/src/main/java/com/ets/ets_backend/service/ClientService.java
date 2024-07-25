@@ -4,6 +4,9 @@ import com.ets.ets_backend.model.Client;
 import com.ets.ets_backend.repository.UserRepository;
 import com.ets.ets_backend.security.HashUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +16,8 @@ public class ClientService {
     @Autowired
     private UserRepository repository;
 
-//    @Transactional(readOnly = true)
-//    public User getUser(String username){
-//        return repository.findByUserName(username).orElse(null);
-//    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Transactional
@@ -25,11 +26,12 @@ public class ClientService {
             return;
         }
         Client u = new Client();
-        u.setSalt(HashUtil.generateSalt(32));
-        u.setPassword(HashUtil.hashPassword(user.getPassword(), u.getSalt()));
-        // u.setId(user.getId());
+        //u.setSalt(hashUtil.generateSalt(32));
+        u.setPassword(passwordEncoder.encode(user.getPassword()));
+
         u.setUsername(user.getUsername());
         u.setEmail(user.getEmail());
+        u.setExited(false);
         repository.save(u);
     }
 
