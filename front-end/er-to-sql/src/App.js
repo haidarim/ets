@@ -3,6 +3,7 @@ import './App.css';
 import SignUp from './component/SignUp';
 import ForgotPassword from "./component/ForgotPassword";
 
+
 function App() {
  
   return (
