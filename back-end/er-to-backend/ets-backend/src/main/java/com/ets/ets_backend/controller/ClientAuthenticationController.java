@@ -21,7 +21,7 @@ import java.util.HashMap;
 @RequestMapping(path = "api0/sign-in")
 public class ClientAuthenticationController {
     @Autowired
-    private ClientService userService;
+    private ClientService clientService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -37,11 +37,12 @@ public class ClientAuthenticationController {
                     new UsernamePasswordAuthenticationToken(client.getUsername(), client.getPassword())
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            final String jwtToken = jwtUtil.generateToken(client);
+            Long id = clientService.getClientId(client.getUsername());
+            final String jwtToken = jwtUtil.generateToken(id);
             HashMap<String, Object> response = new HashMap<>();
             response.put("token", jwtToken);
             response.put("Projects", "No Project Found");
+            response.put("id", id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
