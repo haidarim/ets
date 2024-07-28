@@ -3,6 +3,7 @@ package com.ets.ets_backend.config;
 
 import com.ets.ets_backend.security.ETSUserDetailsService;
 import com.ets.ets_backend.security.HashUtil;
+import com.ets.ets_backend.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  *  Configuration class to set up the authentication security configuration.
@@ -33,6 +35,8 @@ public class SecurityConfig {
     @Autowired
     private ETSUserDetailsService etsUserDetailService;
 
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /**
      * The bean below (returned object) will be used by the Spring Boot container to define how
@@ -44,7 +48,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable) // Disable the CSRF protection
                 .authorizeHttpRequests(authorizeRequests->
                     authorizeRequests // Starts the configuration for URL-based authorization
-                            .requestMatchers("/api0/sign-up", "/api0/sign-in").permitAll() // allow unauthenticated access to this path
+                            .requestMatchers("/api0/sign-up", "/api0/sign-in", "/api0/project").permitAll() // allow unauthenticated access to this path
                             .anyRequest().authenticated() // require authentication for any other request
                 ).sessionManagement(
                         // Setting the Session management to stateless i.e. NO session will be created or
@@ -52,6 +56,8 @@ public class SecurityConfig {
                         sessionManagement->
                                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
