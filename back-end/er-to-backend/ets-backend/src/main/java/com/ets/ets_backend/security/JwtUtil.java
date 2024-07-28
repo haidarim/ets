@@ -1,10 +1,15 @@
 package com.ets.ets_backend.security;
 
 import com.ets.ets_backend.model.Client;
+import com.ets.ets_backend.repository.ClientRepository;
+import com.ets.ets_backend.service.ClientService;
+import com.sun.jna.WString;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +34,8 @@ import java.util.function.Function;
 public class JwtUtil {
 
 
+    @Autowired
+    private ClientRepository clientRepository;
 
     private static final long JWT_TOKEN_VALIDITY = 3600*1000; // 1h
 
@@ -89,16 +96,19 @@ public class JwtUtil {
     }
 
     /**
-     * @param client, User
+     * @param id, Long
      * @return String, a newly created JwtToken
-     * @throws  IllegalAccessException if the username is invalid i.e. client == null
+     * @throws  IllegalAccessException if the id == null  is invalid i.e. client == null
      * */
-    public String generateToken(Client client) throws IllegalAccessException {
-        if (client == null)
+    public String generateToken(Long id) throws IllegalAccessException {
+        if (id == null)
             throw new IllegalAccessException("invalid username");
         Map<String, Object> claims = new HashMap<>();
-        claims.put("exited", client.getExited());
-        return createToken(claims, client.getUsername());
+        Client c = clientRepository.findById(id).orElseThrow(
+                () -> new IllegalAccessException("User Not Found!")
+        );
+        claims.put("exited", c.getExited());
+        return createToken(claims, c.getUsername());
     }
 
     // set up the token properties e.g. ExpirationTime, created tie, ...

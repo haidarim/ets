@@ -11,7 +11,7 @@ import java.util.Base64;
 
 @Component
 public class HashUtil implements PasswordEncoder {
-    private final String PEPPER = "somak";
+    private final String GENERAL_PEPPER = "somak";
 
     public byte[] generateSalt(int length){
         SecureRandom sr = new SecureRandom();
@@ -21,7 +21,7 @@ public class HashUtil implements PasswordEncoder {
     }
 
     public String saltAndPepperPassword(String password, byte[] salt){
-        password = password + PEPPER;
+        password = password + GENERAL_PEPPER;
         // Concatenate salt bytes with password bytes
         return Base64.getEncoder().encodeToString(salt) + password;
     }

@@ -2,7 +2,7 @@ package com.ets.ets_backend.security;
 
 
 import com.ets.ets_backend.model.Client;
-import com.ets.ets_backend.repository.UserRepository;
+import com.ets.ets_backend.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ETSUserDetailsService implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
+    private ClientRepository userRepository;
 //    @Autowired
 //    private HashUtil hashUtil;
 

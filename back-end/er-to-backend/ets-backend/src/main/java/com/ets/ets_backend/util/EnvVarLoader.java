@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnvVarLoader {
 
-    private static final Dotenv dotenv = Dotenv.configure().directory("../../postgres-container").load();
+    private static final Dotenv dotenv = Dotenv.configure().directory("../../er-to-backend/ets-backend").load();
 
     public static void loadEnvVars() {
         System.setProperty("POSTGRES_HOST", dotenv.get("POSTGRES_HOST"));
