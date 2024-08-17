@@ -26,6 +26,8 @@ send_wrong_user(){
 get_project(){
     local token="$1"
     local id="$2"
+    echo token is: $token
+    echo id is: $id
     curl -v -X GET \
         "http://localhost:8080/api0/project/$id" \
         -H "Authorization: Bearer $token"
