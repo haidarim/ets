@@ -48,8 +48,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable) // Disable the CSRF protection
                 .authorizeHttpRequests(authorizeRequests->
                     authorizeRequests // Starts the configuration for URL-based authorization
-                            .requestMatchers("/api0/sign-up", "/api0/sign-in", "/api0/project").permitAll() // allow unauthenticated access to this path
-                            .anyRequest().authenticated() // require authentication for any other request
+                            .requestMatchers("/api0/sign-up").permitAll() // allow unauthenticated access to this path
+                            .anyRequest("/api0/sign-in").authenticated() // require authentication for any other request
                 ).sessionManagement(
                         // Setting the Session management to stateless i.e. NO session will be created or
                         // used by Spring Security,
