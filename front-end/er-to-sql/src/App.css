@@ -144,6 +144,7 @@ body{
   width: 65500px; /* Large width to simulate infinity */
   height: 65500px; /* Large height to simulate infinity */
   position: absolute; /* Allow positioning within canvas_container */
+  z-index: 0;
 }
 
 .project_canvas {
@@ -151,6 +152,7 @@ body{
   height: 100%;
   background-color: rgb(104, 100, 100);
   position: absolute; /* Cover the drawing_area */
+  z-index: 1;
 }
 
 
