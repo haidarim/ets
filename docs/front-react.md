@@ -58,6 +58,8 @@ const myFun = function () {
 };
 ```
 
+Not hoisted, i.e. function expressions are not reachable before definition.
+
 3. Arrow Functions:
    syntax:
 
@@ -66,6 +68,10 @@ const myFun = () => {
   // ...
 };
 ```
+
+Not hoisted, i.e. function expressions are not reachable before definition.
+
+Note: all type of definitions supports `this Binding` dynamically. But only the function declaration can be used as constructor and supports `new` keyword.
 
 ## React Hooks:
 
@@ -110,3 +116,25 @@ function FocusInput() {
 ```
 
 3. `useEffect`: Performs side effects in function components, such as data fetching, subscriptions, or manually changing the DOM. Runs side effects after rendering or in response to changes in dependencies.
+
+**Empty vs Non-empty dependency array** If the dependency array is empty, the `useEffect` hook will run only once, after the initial render of theh component, This is similar to `componentDidMount` in class component. The effect will not run again unless the component is umounted and remounted.
+
+If the dependency array is not empty, i.e. contains one or more values, the `useEffect` hook will run after initial render and also whenever any of the specified dependencies changes. Each time any dependency in the array changes, the effect will be re-run.
+
+ex:
+
+```js
+import React, { useState, useEffect } from "react";
+
+function FetchData() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch("https://api.example.com/data")
+      .then((response) => response.json())
+      .then((data) => setData(data));
+  }, []); // Runs once after the initial render
+
+  return <div>{data ? data.title : "Loading..."}</div>;
+}
+```
