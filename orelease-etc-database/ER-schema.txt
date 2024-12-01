@@ -1,0 +1,81 @@
+users(_id_, _uname_, _email_, exited, salt, ticket, password)
+
+projects(_creator_, _project_id_, created_time, modified_time)
+    _creator_ -> Users._id_
+
+
+
+
+shapes(type, points)
+
+links(from, to)
+
+
+shapes_in_project(_creator_,_shape_name_, _ptoject_id_, _linker_, _linked_, _through_)
+    _creator_ -> projects._creator_
+    _project_id_ -> projects._project_id_
+
+
+
+
+
+------------------------------------------------------
+
+CREATE TABLE Clients(
+	id BIGINT PRIMARY KEY, -- to be used by JPA  
+	uname TEXT UNIQUE NOT NULL, 
+	email TEXT UNIQUE NOT NULL, 
+	exited BOOLEAN NOT NULL, -- should be false from start
+	salt TEXT NOT NULL, 
+	ticket TEXT NOT NULL, 
+	password TEXT NOT NULL,
+	CHECK(LENGTH(TRIM(uname)) > 2 && AND LENGTH(TRIM(uname)) < 20),
+	CHECK(LENGTH(TRIM(password)) > 8)	
+);
+
+CREATE TABLE Projects(
+	creator BIGINT REFERENCES Cleints.id,
+	pId BIGINT, -- to be used by spring boot 
+	pname TEXT NOT NULL,
+	created_time TIMESTAMP NOT NULL,
+	modified_time TIMESTAMP NOT NULL,
+	UNIQUE (creator, pname)
+);
+
+CREATE TABLE Shapes(
+	shId BIGINT PRIMARY KEY, -- to be used by spring boot
+	shname TEXT NOT NULL,
+	type TEXT NOT NULL,
+	points JSONB NOT NULL,
+	creator BIGINT REFERENCES Projects.creator NOT NULL, 
+	projectName BIGINT REFERENCES Projects.pId NOT NULL,
+	UNIQUE(projectId, shname)
+);
+
+CREATE TABLE Links(
+	lfrom BIGINT REFERENCES Shapes.shId NOT NULL, 
+	lto BIGINT REFERENCES Shapes.shId NOT NULL,
+	PRIMARY KEY(lfrom,lto)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

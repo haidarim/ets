@@ -514,3 +514,9 @@ i use syncronization for those methods that reders and writers both share with e
 
 Note that using node the race condition and deadlock are not  problem since the node is single-threaded threads will be accessed to the shared resource in turn, sleep wkae and release. In Spring boot we should take care of  reace condition, and deadlock is not a problem because we remove the hold and wait factor, by having thread-pool that gives each call to the asynch metgod a worker thread from the pool, a thread will not have a resource and wiat for another if the asynch method does't implmmnet hold and wait. 
 ....
+
+
+
+
+### Security: 
+
