@@ -1,8 +1,6 @@
-package com.orelease.etc.config.web;
+package com.orelease.etc.config.security;
 
 
-import com.orelease.etc.config.security.ETSUserDetailsService;
-import com.orelease.etc.config.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +45,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests->
                     authorizeRequests // Starts the configuration for URL-based authorization
                             .requestMatchers("/api0/sign-up").permitAll() // allow unauthenticated access to this path
-                            .anyRequest("/api0/sign-in").authenticated() // require authentication for any other request
+                            .anyRequest().authenticated() // require authentication for any other request
                 ).sessionManagement(
                         // Setting the Session management to stateless i.e. NO session will be created or
                         // used by Spring Security,
@@ -80,7 +78,7 @@ public class SecurityConfig {
      * @return BCryptPasswordEncode as PasswordEncoder for hashing passwords
      */
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder(){
         //return new HashUtil();
         return new BCryptPasswordEncoder();
     }
