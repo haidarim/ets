@@ -18,21 +18,21 @@ FNAME="frontend"
 DBNAME="db"
 
 post_new_user() {
-    curl -i -X POST \
+    curl -i -v -X POST \
         "http://localhost:8080/api0/sign-up" \
         -H "Content-Type: application/json" \
         -d '{"username": "test_user", "password": "123456789", "email": "user@user.user"}'
 }
 
-sign_in() {
-    curl -s -X POST \
+login() {
+    curl -s -v -X POST \
         "http://localhost:8080/api0/sign-in" \
         -H "Content-Type: application/json" \
         -d '{"username": "test_user", "password": "123456789"}'
 }
 
 send_wrong_user(){
-    curl -i -X POST \
+    curl -i -v -X POST \
         "http://localhost:8080/api0/sign-in" \
         -H "Content-Type: application/json" \
         -d '{"username": "test_user", "password": "123456780"}'
@@ -54,14 +54,14 @@ if [ "$#" -eq 0 ]; then
 elif [ "$1" == "post" ]; then
     if [ "$2" == "-nU" ]; then
         post_new_user
-    elif [ "$2" == "-u" ]; then
-        sign_in
-    elif [ "$2" == "-bU" ]; then
+    elif [ "$2" == "-login" ]; then
+        login
+    elif [ "$2" == "-wronguser" ]; then
         send_wrong_user
     fi
 elif  [ "$1" == "get" ]; then 
     if [ "$2" == "-project" ]; then
-        response=$(sign_in)
+        response=$(login)
         token=$(echo $response | jq -r '.token')
         id=$(echo $response | jq -r '.id')
         

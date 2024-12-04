@@ -12,8 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EtsBackendApplication {
 
 	public static void main(String[] args) {
-
-
 		// Load environment variables
 		EnvVarLoader.loadEnvVars();
 		SpringApplication.run(EtsBackendApplication.class, args);
