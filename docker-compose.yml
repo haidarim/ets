@@ -1,0 +1,13 @@
+version:'3.0'
+
+services:
+  db:
+    build:
+      context: ./back-end/postgres-container
+    ports:
+      - "5432:5432"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    container_name: ets_bk
+    network_mode: host
+
