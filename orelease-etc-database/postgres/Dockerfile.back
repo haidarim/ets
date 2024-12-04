@@ -22,3 +22,11 @@ EXPOSE 5432
 # Copy init.sql from builder stage/layer
 COPY --from=builder /init.sql.template /docker-entrypoint-initdb.d/init.sql
 
+
+
+docker build \
+  --build-arg POSTGRES_DB=mydatabase \
+  --build-arg POSTGRES_USER=myuser \
+  --build-arg POSTGRES_PASSWORD=mypassword \
+  -t postgres-custom:latest .
+

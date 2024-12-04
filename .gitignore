@@ -55,6 +55,6 @@ yarn-error.log*
 
 .env
 
-pr_key.pem
-public.key
+orelease-etc-config/sec/*.pem
+
 
