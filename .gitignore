@@ -37,8 +37,8 @@ build/
 /node_modules
 /.pnp
 .pnp.js
-
-
+orelease-etc-frontend/er-to-code/node_modules/
+.mvn
 # production
 /build
 
@@ -57,4 +57,4 @@ yarn-error.log*
 
 orelease-etc-config/sec/*.pem
 
-
+orelease-etc-frontend/er-to-code/ets.v0.*/
