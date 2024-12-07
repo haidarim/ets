@@ -53,8 +53,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+orelease-etc-backend/mvnw
+orelease-etc-backend/mvnw.cmd
+orelease-etc-backend/.mvn
+
+
 .env
 
-orelease-etc-config/sec/*.pem
+orelease-etc-backend/src/main/resources/sec/*.pem
 
 orelease-etc-frontend/er-to-code/ets.v0.*/
