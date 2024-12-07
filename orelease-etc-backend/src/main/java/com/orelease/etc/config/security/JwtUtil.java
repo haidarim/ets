@@ -41,11 +41,8 @@ public class JwtUtil {
 
     public JwtUtil() {
         try {
-            String privateKeyPath = System.getProperty("JWT_PR_KEY");// "./../../postgres-container/pr_key.pem";
-            String publicKeyPath = System.getProperty("JWT_PU_KEY");// "./../../postgres-container/public.key";
-//            System.out.println("Loading private key from: " + privateKeyPath);
-//            System.out.println("Loading public key from: " + publicKeyPath);
-
+            String privateKeyPath = "src/main/resources/sec/pr_key.pem";
+            String publicKeyPath = "src/main/resources/sec/pu_key.pem";
 
             // Load private and public key bytes from files
             byte[] privateKeyBytes = Files.readAllBytes(Paths.get(privateKeyPath).toAbsolutePath());
