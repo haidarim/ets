@@ -14,7 +14,7 @@
   <name>ets-backend</name>
   <description>backend for the er-to-sql project</description>
   <properties>
-    <java.version>21</java.version>
+    <java.version>17</java.version>
   </properties>
   <dependencies>
     <dependency>
