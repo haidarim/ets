@@ -82,6 +82,9 @@ jobs:
           echo "Public key:"
           cat orelease-etc-backend/src/main/resources/sec/pu_key.pem | head -n 2
 
+      - name: Set proper permissions for key files
+        run: sudo chmod -R 755 orelease-etc-backend/src/main/resources/sec
+        
       - name: Install Java and Maven
         run: |
           sudo apt-get update
