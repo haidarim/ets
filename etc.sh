@@ -13,6 +13,8 @@ BDIR="orelease-etc-backend"
 CONFDIR="orelease-etc-config"
 DBDIR="orelease-etc-database/postgres"
 VERSION="0.0.1"
+
+REPO="haidarim/etc"
 BNAME="backend"
 FNAME="frontend"
 DBNAME="db"
@@ -48,6 +50,12 @@ get_project(){
         -H "Authorization: Bearer $token"
 }
 
+push(){
+	local img="$1"
+	docker tag "$img":"$VERSION" "$REPO":"$img""-v""$VERSION"
+	docker rmi "$img":"$VERSION"
+	docker push "$REPO":"$img""-v""$VERSION"
+}
 
 if [ "$#" -eq 0 ]; then
     echo "args required!"
@@ -75,28 +83,29 @@ elif [ "$1" == "build" ];then
     if [ "$2" == "backend" ]; then
     	docker build -t "$BNAME":"$VERSION" "$BDIR/"
     elif [ "$2" == "db" ]; then
-	export $(grep -v '^#' "$CONFDIR/.env"| xargs) 
-	docker build \
-  		--build-arg POSTGRES_DB=$POSTGRES_DB \
-  		--build-arg POSTGRES_USER=$POSTGRES_USER \
-  		--build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-  		-t "$DBNAME":"$VERSION" "$DBDIR/"
-
+		export $(grep -v '^#' "$CONFDIR/.env"| xargs) 
+		docker build \
+  			--build-arg POSTGRES_DB=$POSTGRES_DB \
+  			--build-arg POSTGRES_USER=$POSTGRES_USER \
+  			--build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+  			-t "$DBNAME":"$VERSION" "$DBDIR/"
+		push "$DBNAME"
     elif [ "$2" == "frontend" ]; then
-	docker build -t "$FNAME":"$VERSION" "$FDIR/" 
+		docker build -t "$FNAME":"$VERSION" "$FDIR/"
+	   	push "$FNAME"	
     fi	    
 elif [ "$1" == "run" ]; then
     if [ "$2" == "backend" ]; then
         # docker run --name "$BNAME" --rm -d --network "$BNAME":"$VERSION"
-	# TODO
-	echo todo 
+		# TODO
+		echo todo 
     elif [ "$2" == "frontend" ]; then
-        docker run --name "$FNAME" --rm -d --network host "$FNAME":"$VERSION"
+        docker run --name "$FNAME" --rm -d --network host "$REPO":"$FNAME""-v""$VERSION"
     elif [ "$2" == "db" ]; then
-	export $(grep -v '^#' "$CONFDIR/.env"| xargs)
+		export $(grep -v '^#' "$CONFDIR/.env"| xargs)
         docker run --name "$DBNAME" --rm -d \
             -p 5432:5432 \
-            --env-file "$CONFDIR/.env" "$DBNAME":"$VERSION"
+            --env-file "$CONFDIR/.env" "$REPO":"$DBNAME""-v""$VERSION"
     fi
 elif [ "$1" == "exec" ] && [ "$2" == "db" ]; then
     export $(grep -v '^#' "$CONFDIR/.env"| xargs)
