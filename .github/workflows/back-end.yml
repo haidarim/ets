@@ -1,0 +1,166 @@
+name: Back-End CI/CD
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  # Building pipeline
+  build: 
+    name: Build Spring Boot App
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: --health-cmd="pg_isready -U test" --health-timeout=30s --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install OpenSSL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl
+
+      - name: Generate private key
+        run: |
+          mkdir -p orelease-etc-backend/src/main/resources/sec
+          sudo openssl genpkey -algorithm RSA -out orelease-etc-backend/src/main/resources/sec/pr_key.pem -pkeyopt rsa_keygen_bits:2048
+
+      - name: Generate public key
+        run: |
+          sudo openssl rsa -pubout -in orelease-etc-backend/src/main/resources/sec/pr_key.pem -out orelease-etc-backend/src/main/resources/sec/pu_key.pem
+
+      - name: Debug key file presence
+        run: ls -al orelease-etc-backend/src/main/resources/sec/
+      
+      - name: Validate decoded keys
+        run: |
+          echo "Private key:"
+          cat orelease-etc-backend/src/main/resources/sec/pr_key.pem | head -n 2
+          echo "Public key:"
+          cat orelease-etc-backend/src/main/resources/sec/pu_key.pem | head -n 2
+
+      - name: Set proper permissions for key files
+        run: sudo chmod -R 755 orelease-etc-backend/src/main/resources/sec
+      
+      - name: set up jdk 17
+        uses: actions/setup-java@v3
+        with: 
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Check Java Version
+        run: java -version
+
+      - name: Install mvn
+        run: sudo apt-get install -y maven
+       
+      - name: Build using Maven
+        run: mvn -f orelease-etc-backend/pom.xml clean install
+
+      - name: Upload key files
+        uses: actions/upload-artifact@v3
+        with:
+          name: key-files
+          path: orelease-etc-backend/src/main/resources/sec/*      
+
+  # Testing pipeline
+  test:
+    name: Test Spring Boot App
+    runs-on: ubuntu-latest
+    needs: build
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: --health-cmd="pg_isready -U test" --health-timeout=30s --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Directory
+        run: mkdir -p orelease-etc-backend/src/main/resources/sec/
+
+      - name: Download key files
+        uses: actions/download-artifact@v3
+        with:
+          name: key-files
+
+      - name: Debug current dir
+        run: |
+          echo "Contents of current directory:"
+          ls -al
+
+      - name: Move key files to correct location
+        run: |
+          mv pr_key.pem orelease-etc-backend/src/main/resources/sec/pr_key.pem
+          mv pu_key.pem orelease-etc-backend/src/main/resources/sec/pu_key.pem
+
+      - name: Debug key file presence
+        run: ls -al orelease-etc-backend/src/main/resources/sec/
+
+      - name: Validate decoded keys
+        run: |
+          echo "Private key:"
+          cat orelease-etc-backend/src/main/resources/sec/pr_key.pem | head -n 2
+          echo "Public key:"
+          cat orelease-etc-backend/src/main/resources/sec/pu_key.pem | head -n 2
+
+      - name: Set proper permissions for key files
+        run: sudo chmod -R 755 orelease-etc-backend/src/main/resources/sec
+      - name: set up jdk 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Check Java Version
+        run: java -version
+        
+      - name: Install mvn
+        run: sudo apt-get install -y maven
+        
+      - name: Run tests using Maven
+        run: mvn -f orelease-etc-backend/pom.xml test
+      
+  # Deployment pipeline
+  deploy:
+    name: Deploying 
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Deploying
+        run: echo "Deploying Spring Boot Application"
+
+  # Cleanup pipeline
+  cleanup:
+    name: Clean-up 
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Removing temp directory and target
+        run: |
+          rm -rf ~/.m2/repository/temp
+          rm -rf target
+
+      - name: Remove generated keys
+        run: |
+          rm -rf orelease-etc-backend/src/main/resources/sec/pr_key.pem
+          rm -rf orelease-etc-backend/src/main/resources/sec/pu_key.pem
+ 
