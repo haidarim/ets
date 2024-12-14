@@ -142,7 +142,7 @@ jobs:
     name: Clean-up 
     runs-on: ubuntu-latest
     needs: deploy
-    if: always() # run even other jobs fail
+
     steps:
       - name: Removing temp directory and target
         run: |
@@ -153,7 +153,4 @@ jobs:
         run: |
           rm -rf orelease-etc-backend/src/main/resources/sec/pr_key.pem
           rm -rf orelease-etc-backend/src/main/resources/sec/pu_key.pem
-
-      - name: Remove postgres Image
-        run: docker rmi postgres:latest
  
