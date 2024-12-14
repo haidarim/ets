@@ -89,12 +89,20 @@ jobs:
         options: --health-cmd="pg_isready -U test" --health-timeout=30s --health-retries=5
 
     steps:
+      - name: Directory
+        run: mkdir -p orelease-etc-backend/src/main/resources/sec/
+
       - name: Download key files
         uses: actions/download-artifact@v3
         with:
           name: key-files
 
-      - name: Directory
+      - name: Debug artifact directory
+        run: |
+          echo "Contents of key-files directory:"
+          ls -R ./key-files || echo "key-files directory not found"
+
+      - name: Ensure target directory exists
         run: mkdir -p orelease-etc-backend/src/main/resources/sec/
 
       - name: Move key files to correct location
