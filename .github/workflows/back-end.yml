@@ -9,6 +9,16 @@ jobs:
   build: 
     name: Build Spring Boot App
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: --health-cmd="pg_isready -U test" --health-timeout=30s --health-retries=5
 
     steps:
       - name: Checkout code
@@ -19,12 +29,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openssl
 
-      - name: Generate real private key
+      - name: Generate private key
         run: |
           mkdir -p orelease-etc-backend/src/main/resources/sec
           sudo openssl genpkey -algorithm RSA -out orelease-etc-backend/src/main/resources/sec/pr_key.pem -pkeyopt rsa_keygen_bits:2048
 
-      - name: Generate real public key
+      - name: Generate public key
         run: |
           sudo openssl rsa -pubout -in orelease-etc-backend/src/main/resources/sec/pr_key.pem -out orelease-etc-backend/src/main/resources/sec/pu_key.pem
 
@@ -52,28 +62,39 @@ jobs:
 
       - name: Install mvn
         run: sudo apt-get install -y maven
-
+       
       - name: Build using Maven
         run: mvn -f orelease-etc-backend/pom.xml clean install
+      
 
   # Testing pipeline
   test:
     name: Test Spring Boot App
     runs-on: ubuntu-latest
     needs: build
-    
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: --health-cmd="pg_isready -U test" --health-timeout=30s --health-retries=5
+
     steps:
       - name: Install OpenSSL
         run: |
           sudo apt-get update
           sudo apt-get install -y openssl
 
-      - name: Generate real private key
+      - name: Generate private key
         run: |
           mkdir -p orelease-etc-backend/src/main/resources/sec
           sudo openssl genpkey -algorithm RSA -out orelease-etc-backend/src/main/resources/sec/pr_key.pem -pkeyopt rsa_keygen_bits:2048
 
-      - name: Generate real public key
+      - name: Generate public key
         run: |
           sudo openssl rsa -pubout -in orelease-etc-backend/src/main/resources/sec/pr_key.pem -out orelease-etc-backend/src/main/resources/sec/pu_key.pem
 
@@ -97,7 +118,7 @@ jobs:
 
       - name: Check Java Version
         run: java -version
-
+        
       - name: Install mvn
         run: sudo apt-get install -y maven
         
@@ -105,7 +126,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Run tests using Maven
         run: mvn -f orelease-etc-backend/pom.xml test
-
+      
   # Deployment pipeline
   deploy:
     name: Deploying 
@@ -132,3 +153,7 @@ jobs:
         run: |
           rm -rf orelease-etc-backend/src/main/resources/sec/pr_key.pem
           rm -rf orelease-etc-backend/src/main/resources/sec/pu_key.pem
+
+      - name: Remove postgres Image
+        run: docker rmi postgres:latest
+ 

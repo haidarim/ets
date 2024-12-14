@@ -50,11 +50,11 @@ get_project(){
         -H "Authorization: Bearer $token"
 }
 
-push(){
+tag(){
 	local img="$1"
 	docker tag "$img":"$VERSION" "$REPO":"$img""-v""$VERSION"
 	docker rmi "$img":"$VERSION"
-	docker push "$REPO":"$img""-v""$VERSION"
+	# docker push "$REPO":"$img""-v""$VERSION"
 }
 
 if [ "$#" -eq 0 ]; then
@@ -89,10 +89,10 @@ elif [ "$1" == "build" ];then
   			--build-arg POSTGRES_USER=$POSTGRES_USER \
   			--build-arg POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
   			-t "$DBNAME":"$VERSION" "$DBDIR/"
-		push "$DBNAME"
+		tag "$DBNAME"
     elif [ "$2" == "frontend" ]; then
 		docker build -t "$FNAME":"$VERSION" "$FDIR/"
-	   	push "$FNAME"	
+	   	tag "$FNAME"	
     fi	    
 elif [ "$1" == "run" ]; then
     if [ "$2" == "backend" ]; then
@@ -110,6 +110,12 @@ elif [ "$1" == "run" ]; then
 elif [ "$1" == "exec" ] && [ "$2" == "db" ]; then
     export $(grep -v '^#' "$CONFDIR/.env"| xargs)
     docker exec -it "$DBNAME"  psql -U $POSTGRES_USER -d $POSTGRES_DB
+elif [ "$1" == "rm" ]; then 
+	if [ "$2" == "db" ]; then 
+		docker stop "$DBNAME"docker inspect --type container db > /dev/null 2>&1 && docker rm -f db || echo "No container named 'db' exists. Skipping removal." && docker rmi "$REPO":"$DBNAME""-v""$VERSION"	
+	elif [ "$2" == "frontend" ]; then 
+		echo "..."
+	fi	
 else
     echo "bad args"
 fi
