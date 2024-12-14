@@ -94,6 +94,14 @@ jobs:
         with:
           name: key-files
 
+      - name: Directory
+        run: mkdir -p orelease-etc-backend/src/main/resources/sec/
+
+      - name: Move key files to correct location
+        run: |
+          mv ./key-files/pr_key.pem orelease-etc-backend/src/main/resources/sec/pr_key.pem
+          mv ./key-files/pu_key.pem orelease-etc-backend/src/main/resources/sec/pu_key.pem
+
       - name: Debug key file presence
         run: ls -al orelease-etc-backend/src/main/resources/sec/
 
