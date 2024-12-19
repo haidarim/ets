@@ -59,6 +59,7 @@ orelease-etc-backend/.mvn
 
 
 .env
+.github/workflows/back-end.yml.bak
 
 orelease-etc-backend/src/main/resources/sec/*.pem
 
