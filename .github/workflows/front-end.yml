@@ -4,6 +4,9 @@ on:
   push: 
   pull_request:
 
+env:
+  DIR: ./orelease-etc-frontend/er-to-code/
+
 jobs:
   # Building pipeline
   frontend: 
@@ -22,12 +25,17 @@ jobs:
           
       - name: Install dependencies
         run: npm install
+        working-directory: ${{ env.DIR }}
 
       - name: Build
         run: npm run build
+        working-directory: ${{ env.DIR }}
+
 
       - name: run tests
         run: npm test
+        working-directory: ${{ env.DIR }}
+
 
   cleanup:
     name: Clean files
@@ -40,13 +48,16 @@ jobs:
 
       - name: Remove modules
         run: rm -rf node_modules
+        working-directory: ${{ env.DIR }}
 
       - name: rmeove build dir
         run: rm -rf build
+        working-directory: ${{ env.DIR }}
 
       - name: confirm clean
         run: |
           dirs=$(ls -al | grep build)
           dir+=$(ls -al | grep node_modules)
           if [ "${#dirs[@]}" -ne 0 ]; then exit 1 fi 
+        working-directory: ${{ env.DIR }}
 
