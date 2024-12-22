@@ -5,7 +5,7 @@ on:
   pull_request:
 
 env:
-  DIR: ./orelease-etc-frontend/er-to-code/
+  DIR: ${{ github.workspace }}/orelease-etc-frontend/er-to-code/
 
 jobs:
   # Building pipeline
@@ -27,10 +27,9 @@ jobs:
         run: npm install
         working-directory: ${{ env.DIR }}
 
-      - name: Build
-        run: npm run build
-        working-directory: ${{ env.DIR }}
-
+      - name: Add Missing Babel Dependency
+        run: npm install --save-dev @babel/plugin-proposal-private-property-in-object
+        working-directory: ${{ env.FRONTEND_PATH }}
 
       - name: run tests
         run: npm test
@@ -43,21 +42,35 @@ jobs:
     needs: frontend
     
     steps: 
-      - name: clean cache
+      - name: Checkout code
+        uses: actions/checkout@v3 
+
+      - name: Debug Directory
+        run: |
+          echo "Current working directory: $(pwd)"
+          echo "Checking directory contents:"
+          ls -al ${{ env.DIR }}
+
+      - name: Ensure Directory Exists
+        run: mkdir -p ${{ env.DIR }}
+
+      - name: Clean Cache
         run: npm cache clean --force 
 
-      - name: Remove modules
+      - name: Remove Modules
         run: rm -rf node_modules
         working-directory: ${{ env.DIR }}
 
-      - name: rmeove build dir
+      - name: Remove Build Directory
         run: rm -rf build
         working-directory: ${{ env.DIR }}
 
-      - name: confirm clean
+      - name: Confirm Clean
         run: |
-          dirs=$(ls -al | grep build)
-          dir+=$(ls -al | grep node_modules)
-          if [ "${#dirs[@]}" -ne 0 ]; then exit 1 fi 
+          if [ -d node_modules ] || [ -d build ]; then
+            echo "Cleanup failed: Directories still exist"
+            exit 1
+          else
+            echo "Cleanup successful: Directories removed"
+          fi
         working-directory: ${{ env.DIR }}
-
